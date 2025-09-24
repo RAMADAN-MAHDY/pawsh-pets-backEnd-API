@@ -7,6 +7,7 @@ export const generateToken = (payload) => jwt.sign(payload, secretKey, { expires
 export const generateRefreshToken = (payload) => jwt.sign(payload, refreshKey, { expiresIn: '7d' });
 export const verifyToken = (token) => {
     try {
+        // console.log("Verifying Token:", token , secretKey);  
         const decoded = jwt.verify(token, secretKey);
         return { valid: true, expired: false, decoded };
     }

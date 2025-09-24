@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDb from './config/connectDB.js';
+import authRoutes from './Routers/authRoutes.js';
+import Animal from './Routers/animalRoutes.js';
 // import { seedHotels } from './helper/addData.js';
 // import  Booking  from './routes/booking.routes.js';
 dotenv.config();
@@ -21,6 +23,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 connectDb();
 // Routes
+app.use('/api/auth', authRoutes);
+app.use('/api', Animal);
 app.get('/', (req, res) => {
     // seedHotels();   //  add this line to seed data hotels 
     res.json({ message: 'API is running...' });

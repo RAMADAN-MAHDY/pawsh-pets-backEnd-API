@@ -1,0 +1,39 @@
+.env    
+# Environment variables for the project
+# Do not commit this file to version control    
+# Example:
+# MONGO_DB="your_mongo_db_connection_string"    
+# MONGO_DB="mongodb+srv://username:password@host/database?retryWrites=true&w=majority&appName=yourAppName"
+node_modules/
+# Node.js dependencies
+# dist/
+# Build output directory
+
+coverage/
+# Test coverage reports
+
+*.log
+# Log files
+
+.DS_Store
+# macOS system files
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# Package manager logs
+
+*.sqlite
+*.sqlite3
+# SQLite database files
+
+.idea/
+.vscode/
+# IDE/editor settings
+
+*.bak
+# Backup files
+
+tmp/
+temp/
+# Temporary files and folders

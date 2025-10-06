@@ -120,13 +120,13 @@ export const loginUser = async (req, res) => {
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
                 secure: /*process.env.NODE_ENV === "production"*/ false,
-                sameSite: "none",
+                sameSite: "lax",
                 maxAge: 15 * 60 * 1000,
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: /*process.env.NODE_ENV === "production"*/ false,
-                sameSite: "none",
+                sameSite: "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
             res.status(200).json({
@@ -174,7 +174,7 @@ export const refreshAccessToken = async (req, res) => {
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
                 secure: /*process.env.NODE_ENV === "production"*/ false,
-                sameSite: "none",
+                sameSite: "lax",
                 maxAge: 15 * 60 * 1000,
             });
             res.status(200).json({ message: "Access token refreshed (web)" });
@@ -196,7 +196,7 @@ export const verifyAccessToken = async (req, res) => {
     try {
         const client = req.body.client || "web";
         let token;
-        console.log("Client Type:", client);
+        //  console.log("Client Type:", client);
         if (client === "web") {
             token = req.cookies?.accessToken;
         }

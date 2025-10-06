@@ -120,13 +120,13 @@ export const loginUser = async (req, res) => {
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
                 secure: /*process.env.NODE_ENV === "production"*/ false,
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 15 * 60 * 1000,
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: /*process.env.NODE_ENV === "production"*/ false,
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
             res.status(200).json({
@@ -174,7 +174,7 @@ export const refreshAccessToken = async (req, res) => {
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
                 secure: /*process.env.NODE_ENV === "production"*/ false,
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 15 * 60 * 1000,
             });
             res.status(200).json({ message: "Access token refreshed (web)" });

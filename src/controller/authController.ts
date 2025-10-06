@@ -156,14 +156,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       // ✅ تخزين التوكنات في الكوكيز
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: /*process.env.NODE_ENV === "production"*/ false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "none",
         maxAge: 15 * 60 * 1000,
       });
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure:  /*process.env.NODE_ENV === "production"*/ false,
+        secure:  process.env.NODE_ENV === "production",
         sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
@@ -219,7 +219,7 @@ export const refreshAccessToken = async (
     if (client === "web") {
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
-        secure:  /*process.env.NODE_ENV === "production"*/ false,
+        secure:  process.env.NODE_ENV === "production",
         sameSite: "none",
         maxAge: 15 * 60 * 1000,
       });
@@ -286,12 +286,12 @@ export const logoutUser = async (req: Request, res: Response): Promise<void> => 
       // نمسح الكوكيز من المتصفح
       res.clearCookie("accessToken", {
         httpOnly: true,
-        secure:  /*process.env.NODE_ENV === "production"*/ false,
+        secure:  process.env.NODE_ENV === "production",
         sameSite: "none",
       });
       res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure:  /*process.env.NODE_ENV === "production"*/ false,
+        secure:  process.env.NODE_ENV === "production",
         sameSite: "none",
       });
 

@@ -32,6 +32,11 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
 
 connectDb();
 // Routes

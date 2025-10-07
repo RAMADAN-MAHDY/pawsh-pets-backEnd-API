@@ -16,11 +16,15 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 const corsOptions = {
-    origin: ["http://localhost:5173", "http://localhost:3000" , "https://58a07fc147ce.ngrok-free.app"],
+    origin: ["http://localhost:5173", "http://localhost:3000", "https://58a07fc147ce.ngrok-free.app"],
     optionsSuccessStatus: 200,
     credentials: true
 };
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+});
 connectDb();
 // Routes
 app.use('/api/auth', authRoutes);

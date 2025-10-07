@@ -243,31 +243,9 @@ export const verifyAccessToken = async (
   res: Response
 ): Promise<void> => {
   try {
-    const client = req.body.client || "web";
-    let token: string | undefined;
-
-    //  console.log("Client Type:", client);
-    if (client === "web") {
-      token = req.cookies?.accessToken;
-    } else {
-      token = req.body.accessToken || req.headers["authorization"]?.split(" ")[1];
-    }
-        // console.log("Token Received:", token);
-
-    if (!token) {
-      res.status(401).json({ message: "No access token provided" });
-      return;
-    }
-
-    const decoded = verifyToken(token);
     
-    if (!decoded) {
-      res.status(401).json({ valid: false, message: "Invalid access token" });
-      return;
-    }
-    // console.log("Decoded Token:", decoded);
 
-    res.status(200).json({ valid: true, user: decoded });
+    res.status(200).json({ valid: true , message: "Access token is valid" });
   } catch (error: any) {
     if (error.name === "TokenExpiredError") {
       res.status(401).json({ valid: false, message: "Access token expired" });

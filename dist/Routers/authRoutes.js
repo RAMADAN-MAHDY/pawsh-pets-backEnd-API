@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { registerUser, loginUser, verifyAccessToken, refreshAccessToken, logoutUser, googleAuth } from "../controller/authController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 const router = Router();
 // POST /api/auth/register
 router.post("/register", registerUser);
 // POST /api/auth/login
 router.post("/login", loginUser);
 // POST /api/auth/verify-token
-router.post("/verify-token", verifyAccessToken);
+router.post("/verify-token", authMiddleware, verifyAccessToken);
 // POST /api/auth/refresh-token
 router.post("/refresh-token", refreshAccessToken);
 // POST /api/auth/logout

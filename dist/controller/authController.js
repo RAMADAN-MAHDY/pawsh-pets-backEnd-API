@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.js"; // المسار حسب مكان الملف عندك
-import { generateToken, generateRefreshToken, verifyRefreshToken, verifyToken } from "../utils/jwt.js"; // مسار ملف jwt حسب مشروعك
+import { generateToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js"; // مسار ملف jwt حسب مشروعك
 import { OAuth2Client } from "google-auth-library";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // POST /auth/google
@@ -194,27 +194,7 @@ export const refreshAccessToken = async (req, res) => {
 // =============== [ VERIFY ACCESS TOKEN ] ===============
 export const verifyAccessToken = async (req, res) => {
     try {
-        const client = req.body.client || "web";
-        let token;
-        //  console.log("Client Type:", client);
-        if (client === "web") {
-            token = req.cookies?.accessToken;
-        }
-        else {
-            token = req.body.accessToken || req.headers["authorization"]?.split(" ")[1];
-        }
-        // console.log("Token Received:", token);
-        if (!token) {
-            res.status(401).json({ message: "No access token provided" });
-            return;
-        }
-        const decoded = verifyToken(token);
-        if (!decoded) {
-            res.status(401).json({ valid: false, message: "Invalid access token" });
-            return;
-        }
-        // console.log("Decoded Token:", decoded);
-        res.status(200).json({ valid: true, user: decoded });
+        res.status(200).json({ valid: true, message: "Access token is valid" });
     }
     catch (error) {
         if (error.name === "TokenExpiredError") {

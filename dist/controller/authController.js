@@ -119,13 +119,15 @@ export const loginUser = async (req, res) => {
             // ✅ تخزين التوكنات في الكوكيز
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                // secure: process.env.NODE_ENV === "production",
+                secure: true,
                 sameSite: "none",
                 maxAge: 15 * 60 * 1000,
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                // secure: process.env.NODE_ENV === "production",
+                secure: true,
                 sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
@@ -173,7 +175,8 @@ export const refreshAccessToken = async (req, res) => {
         if (client === "web") {
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                // secure: process.env.NODE_ENV === "production",
+                secure: true,
                 sameSite: "none",
                 maxAge: 15 * 60 * 1000,
             });

@@ -348,6 +348,7 @@ async function refreshAccessToken() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // مهم لإرسال واستقبال الكوكيز
       body: JSON.stringify({ client: 'web' }),
     });
 

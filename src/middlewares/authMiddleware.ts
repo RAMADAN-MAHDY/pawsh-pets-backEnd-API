@@ -43,8 +43,8 @@ export const authMiddleware = (
         req.user = {
             userId: decoded.userId || decoded.id, // دعم للحالتين
             email: decoded.email,
-            role: decoded.role,
-        };// نحط بيانات المستخدم في req.user
+            role: decoded.role || 'user', // نحط بيانات المستخدم في req.user مع دور افتراضي
+        };
         next();
     } catch (error) {
         return res.status(401).json({ message: "Unauthorized jwt from catch" });

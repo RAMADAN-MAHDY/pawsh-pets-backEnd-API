@@ -1,4 +1,4 @@
-import { Schema, model, models, Document, Types } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 import { IProduct } from "./Product.js";
 import { TUser } from "./user.js";
 
@@ -24,6 +24,6 @@ const favoriteSchema = new Schema<IFavorite>(
   { timestamps: true }
 );
 
-const Favorite = models.Favorite || model<IFavorite>("Favorite", favoriteSchema);
+const Favorite =model<IFavorite>("Favorite", favoriteSchema);
 
 export default Favorite;

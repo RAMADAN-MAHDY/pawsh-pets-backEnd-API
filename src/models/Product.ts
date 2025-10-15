@@ -1,4 +1,4 @@
-import { Schema, model, models, Document, Types } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 import { ICategory } from "./Category.js";
 
 export interface IProduct extends Document {
@@ -52,6 +52,6 @@ const productSchema = new Schema<IProduct>(
   { timestamps: true }
 );
 
-const Product = models.Product || model<IProduct>("Product", productSchema);
+const Product = model<IProduct>("Product", productSchema);
 
 export default Product;

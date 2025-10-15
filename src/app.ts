@@ -6,7 +6,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDb from './config/connectDB.js';
 import authRoutes from './Routers/authRoutes.js';
-import Animal  from './Routers/animalRoutes.js';
+import Animal from './Routers/animalRoutes.js';
+import categoryRoutes from './Routers/categoryRoutes.js';
+import productRoutes from './Routers/productRoutes.js';
+import favoriteRoutes from './Routers/favoriteRoutes.js';
 // import { seedHotels } from './helper/addData.js';
 // import  Booking  from './routes/booking.routes.js';
 
@@ -43,6 +46,9 @@ connectDb();
 
 app.use('/api/auth', authRoutes);
 app.use('/api', Animal);
+app.use('/api', categoryRoutes);
+app.use('/api', productRoutes);
+app.use('/api', favoriteRoutes);
 
 
 

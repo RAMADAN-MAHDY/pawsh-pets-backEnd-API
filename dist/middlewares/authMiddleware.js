@@ -23,8 +23,8 @@ export const authMiddleware = (req, res, next) => {
         req.user = {
             userId: decoded.userId || decoded.id, // دعم للحالتين
             email: decoded.email,
-            role: decoded.role,
-        }; // نحط بيانات المستخدم في req.user
+            role: decoded.role || 'user', // نحط بيانات المستخدم في req.user مع دور افتراضي
+        };
         next();
     }
     catch (error) {

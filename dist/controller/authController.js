@@ -56,7 +56,7 @@ export const googleAuth = async (req, res) => {
 // إنشاء حساب جديد
 export const registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, role } = req.body;
         // ✅ التحقق من إدخال البيانات
         if (!username || !email || !password) {
             res.status(400).json({ message: "All fields are required" });
@@ -76,6 +76,7 @@ export const registerUser = async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            role: role,
         });
         await newUser.save();
         // ✅ إرجاع رد بدون الباسورد
@@ -95,6 +96,65 @@ export const registerUser = async (req, res) => {
     }
 };
 // يمكنك إضافة دوال تسجيل الدخول وتسجيل الخروج هنا لاحقًا
+export const logiadmin = async (req, res) => {
+    try {
+        const { email, password, client } = req.body;
+        if (!email || !password) {
+            res.status(400).json({ message: "All fields are required" });
+            return;
+        }
+        const user = await User.findOne({ email });
+        if (!user || user.role !== "admin") {
+            res.status(401).json({ message: "Invalid credentials" });
+            return; // هنا لو مش موجود      
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            res.status(401).json({ message: "Invalid credentials" });
+            return;
+        }
+        const accessToken = generateToken({ id: user._id, email: user.email, role: user.role });
+        const refreshToken = generateRefreshToken({ id: user._id });
+        // ✅ تخزين التوكنات في الكوكيز
+        if (client === "web") {
+            // ✅ تخزين التوكنات في الكوكيز
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true,
+                // secure: process.env.NODE_ENV === "production",
+                secure: true,
+                sameSite: "none",
+                maxAge: 15 * 60 * 1000,
+            });
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                // secure: process.env.NODE_ENV === "production",
+                secure: true,
+                sameSite: "none",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+            res.status(200).json({
+                message: "Login successful (web)",
+                user: { id: user._id, username: user.username, email: user.email },
+            });
+        }
+        else {
+            // ✅ إرجاع التوكنات في response body (للموبايل)
+            res.status(200).json({
+                message: "Login successful (mobile)",
+                tokens: { accessToken, refreshToken },
+                user: { id: user._id, username: user.username, email: user.email },
+            });
+        }
+        res.status(200).json({
+            message: "Login successful",
+            user: { id: user._id, username: user.username, email: user.email },
+        });
+    }
+    catch (error) {
+        console.error("Login Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 export const loginUser = async (req, res) => {
     try {
         const { email, password, client } = req.body;
@@ -113,7 +173,7 @@ export const loginUser = async (req, res) => {
             res.status(401).json({ message: "Invalid credentials" });
             return;
         }
-        const accessToken = generateToken({ id: user._id });
+        const accessToken = generateToken({ id: user._id, email: user.email, role: user.role });
         const refreshToken = generateRefreshToken({ id: user._id });
         if (client === "web") {
             // ✅ تخزين التوكنات في الكوكيز
@@ -171,7 +231,7 @@ export const refreshAccessToken = async (req, res) => {
             return;
         }
         // إنشاء Access Token جديد
-        const newAccessToken = generateToken({ id: decoded.id });
+        const newAccessToken = generateToken({ id: decoded.id, role: "user", email: decoded.email });
         if (client === "web") {
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
@@ -208,6 +268,63 @@ export const verifyAccessToken = async (req, res) => {
         }
     }
 };
+// =============== [ VERIFY admin ACCESS TOKEN ] ===============
+export const verifyadminAccessToken = async (req, res) => {
+    try {
+        res.status(200).json({ valid: true, message: "admin Access token is valid" });
+    }
+    catch (error) {
+        if (error.name === "TokenExpiredError") {
+            res.status(401).json({ valid: false, message: "Access token expired" });
+        }
+        else {
+            res.status(401).json({ valid: false, message: "Invalid access token" });
+        }
+    }
+};
+export const AdminRefreshAccessToken = async (req, res) => {
+    try {
+        const client = req.body.client || "web";
+        let refreshToken;
+        if (client === "web") {
+            refreshToken = req.cookies?.refreshToken;
+        }
+        else {
+            refreshToken = req.body.refreshToken || req.headers["authorization"]?.split(" ")[1];
+        }
+        if (!refreshToken) {
+            res.status(401).json({ message: "No refresh token provided" });
+            return;
+        }
+        const { valid, expired, decoded } = verifyRefreshToken(refreshToken);
+        if (!valid || !decoded) {
+            res.status(401).json({ message: expired ? "Refresh token expired" : "Invalid refresh token" });
+            return;
+        }
+        // إنشاء Access Token جديد
+        const newAccessToken = generateToken({ id: decoded.id, role: "admin", email: decoded.email });
+        if (client === "web") {
+            res.cookie("accessToken", newAccessToken, {
+                httpOnly: true,
+                // secure: process.env.NODE_ENV === "production",
+                secure: true,
+                sameSite: "none",
+                maxAge: 15 * 60 * 1000,
+            });
+            res.status(200).json({ message: "Access token refreshed (web)" });
+        }
+        else {
+            res.status(200).json({
+                message: "Access token refreshed (mobile)",
+                accessToken: newAccessToken,
+            });
+        }
+    }
+    catch (error) {
+        console.error("Refresh Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 // =============== [ LOGOUT USER ] ===============
 export const logoutUser = async (req, res) => {
     try {
@@ -216,12 +333,12 @@ export const logoutUser = async (req, res) => {
             // نمسح الكوكيز من المتصفح
             res.clearCookie("accessToken", {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: true,
                 sameSite: "none",
             });
             res.clearCookie("refreshToken", {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: true,
                 sameSite: "none",
             });
             res.status(200).json({ message: "Logged out successfully (web)" });

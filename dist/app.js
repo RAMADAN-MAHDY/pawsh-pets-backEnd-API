@@ -7,6 +7,9 @@ import dotenv from 'dotenv';
 import connectDb from './config/connectDB.js';
 import authRoutes from './Routers/authRoutes.js';
 import Animal from './Routers/animalRoutes.js';
+import categoryRoutes from './Routers/categoryRoutes.js';
+import productRoutes from './Routers/productRoutes.js';
+import favoriteRoutes from './Routers/favoriteRoutes.js';
 // import { seedHotels } from './helper/addData.js';
 // import  Booking  from './routes/booking.routes.js';
 dotenv.config();
@@ -29,6 +32,9 @@ connectDb();
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api', Animal);
+app.use('/api', categoryRoutes);
+app.use('/api', productRoutes);
+app.use('/api', favoriteRoutes);
 app.get('/', (req, res) => {
     // seedHotels();   //  add this line to seed data hotels 
     res.json({ message: 'API is running...' });

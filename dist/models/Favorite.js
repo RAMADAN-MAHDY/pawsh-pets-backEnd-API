@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model } from "mongoose";
 const favoriteSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
@@ -11,5 +11,5 @@ const favoriteSchema = new Schema({
         required: true,
     },
 }, { timestamps: true });
-const Favorite = models.Favorite || model("Favorite", favoriteSchema);
+const Favorite = model("Favorite", favoriteSchema);
 export default Favorite;

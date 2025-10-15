@@ -44,21 +44,6 @@ https://pawsh-pets-back-end-api.vercel.app
         }
     };
 
-    const loginAdminMobile = async (email, password) => {
-        try {
-            const response = await axios.post('/api/auth/logiadmin', {
-                email,
-                password,
-                client: 'mobile'
-            });
-            console.log('Admin login successful (mobile):', response.data);
-            // يمكنك تخزين التوكنات (response.data.tokens.accessToken, response.data.tokens.refreshToken) محليًا في تطبيق الموبايل
-            return response.data;
-        } catch (error) {
-            console.error('Admin login failed (mobile):', error.response ? error.response.data : error.message);
-            throw error;
-        }
-    };
     ```
 
     **باستخدام Fetch:**
@@ -146,22 +131,9 @@ https://pawsh-pets-back-end-api.vercel.app
 ---
 
 
-
-          
-بالتأكيد، سأقوم بتحديث وثائق الـ API التي أنشأتها مسبقًا لتشمل نقاط نهاية التحقق من توكن المسؤول وتحديثه.
-
-سأضيف هذه المعلومات إلى قسم المصادقة الحالي، مع تفاصيل حول نقاط نهاية `POST /api/auth/verifyadmin-token` و `POST /api/auth/refresh-admin-token`، بما في ذلك:
-
 ### نقطة نهاية التحقق من توكن الوصول للمسؤول (Verify Admin Access Token)
 
 *   **المسار (Path) وطريقة HTTP:** `POST /api/auth/verifyadmin-token`
-*   **الوصف (Description):** تتحقق مما إذا كان توكن الوصول الخاص بالمسؤول صالحًا وغير منتهي الصلاحية. تتطلب مصادقة المسؤول.
-*   **الرؤوس المطلوبة (Required Headers):**
-    *   `Authorization: Bearer <admin_access_token>`
-*   **الجسم المطلوب (Request Body):** لا يوجد.
-*   **الاستجابات المحتملة (Possible Responses):**
-    *   `200 OK`: `{"valid": true, "message": "admin Access token is valid"}`
-    *   `401 Unauthorized`: `{"valid": false, "message": "Access token expired"}` أو `{"valid": false, "message": "Invalid access token"}`
 
 *   **أمثلة كود لـ Next.js/React (باستخدام `axios` و `fetch`):**
 

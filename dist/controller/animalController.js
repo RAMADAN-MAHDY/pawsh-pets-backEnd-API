@@ -45,3 +45,58 @@ export const createAnimal = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+// handel update profaile animale
+export const updateAnimal = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const animal = await Animal.findById(req.params.id);
+        if (!animal) {
+            return res.status(404).json({ message: "Animal not found" });
+        }
+        // تحقق من أن المستخدم هو صاحب البروفايل
+        if (animal.user.toString() !== req.user.userId) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+        //  الصورة إذا تم رفعها
+        if (req.file) {
+            const uploadResult = await uploadToImgBB(req.file.buffer);
+            animal.photo = uploadResult.url;
+        }
+        // تحديث الحقول المرسلة فقط
+        // for (const key in req.body) {
+        //     if (req.body.hasOwnProperty(key)) {
+        //         (animal as any)[key] = req.body[key];
+        //     }
+        // }
+        // تحديث الحقول المرسلة فقط
+        Object.assign(animal, req.body);
+        await animal.save();
+        return res.status(200).json({
+            message: "Animal updated successfully",
+            data: animal,
+        });
+    }
+    catch (error) {
+        console.error("Error updating animal:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+// get animals by user id
+export const getAnimalsByUserId = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const animals = await Animal.find({ user: req.user.userId });
+        return res.status(200).json({
+            message: "Animals retrieved successfully",
+            data: animals,
+        });
+    }
+    catch (error) {
+        console.error("Error retrieving animals:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};

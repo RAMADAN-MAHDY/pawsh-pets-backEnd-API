@@ -1029,4 +1029,387 @@ await Dio().post(
 * الرابط المستخدم في الأمثلة (`http://your-backend-url/api/animals`) يجب تغييره حسب السيرفر الخاص بك.
 
 ---
+### 4. جلب بيانات الحيوانات الخاصة بالمستخدم (Get User's Animals Data)
+
+تتيح هذه الوظيفة للمستخدم جلب قائمة بجميع الحيوانات التي قام بإضافتها.
+
+-   **المسار (Endpoint):** `GET /api/animals`
+-   **الترويسات المطلوبة (Required Headers):**
+    *   `Authorization`: `Bearer <ACCESS_TOKEN>` (لمستخدمي الموبايل)
+    *   **الكوكيز (Cookies):** `accessToken=<ACCESS_TOKEN>` (لمستخدمي الويب)
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    [
+        {
+            "_id": "معرف الحيوان",
+            "user": "معرف المستخدم",
+            "photo": "رابط الصورة",
+            "type": "نوع الحيوان (مثال: كلب)",
+            "name": "اسم الحيوان",
+            "breedOrSpecies": "السلالة أو الفصيلة",
+            "age": "العمر",
+            "weight": "الوزن",
+            "gender": "الجنس (ذكر/أنثى/غير معروف)",
+            "identifyingFeatures": "ميزات مميزة (اختياري)",
+            "healthConsiderations": "اعتبارات صحية (اختياري)",
+            "dietaryNeeds": "احتياجات غذائية (اختياري)",
+            "behaviorAndTemperament": "السلوك والمزاج (اختياري)",
+            "activityLevel": "مستوى النشاط (منخفض/متوسط/مرتفع)",
+            "createdAt": "تاريخ الإنشاء",
+            "updatedAt": "تاريخ آخر تحديث",
+            "__v": 0
+        }
+    ]
+    ```
+-   **الاستجابة عند وجود خطأ (Error Response - Status 401 Unauthorized / 500 Server Error):**
+    ```json
+    {
+        "message": "Unauthorized jwt"
+    }
+    ```
+
+#### أمثلة الكود:
+
+**React/Next.js (Frontend - Fetch API):**
+
+```javascript
+async function getUserAnimals() {
+  try {
+    const response = await fetch('YOUR_API_BASE_URL/api/animals', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // مهم لإرسال الكوكيز تلقائيًا
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('User animals:', data);
+      return data;
+    } else {
+      console.error('Failed to fetch user animals:', data.message);
+      throw new Error(data.message || 'Failed to fetch user animals');
+    }
+  } catch (error) {
+    console.error('Error fetching user animals:', error);
+    throw error;
+  }
+}
+```
+
+**React/Next.js (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function getUserAnimalsAxios() {
+  try {
+    const response = await axios.get('YOUR_API_BASE_URL/api/animals', {
+      withCredentials: true, // مهم لإرسال الكوكيز تلقائيًا
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('User animals:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user animals:', error.response ? response.response.data.message : error.message);
+    throw error;
+  }
+}
+```
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<List<Map<String, dynamic>>> getUserAnimalsFlutter(String accessToken) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/animals');
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken', // إرسال التوكن في رأس Authorization
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      print('User animals: $data');
+      return data.cast<Map<String, dynamic>>();
+    } else {
+      final errorData = json.decode(response.body);
+      print('Failed to fetch user animals: ${response.statusCode} - ${errorData['message']}');
+      throw Exception('Failed to fetch user animals');
+    }
+  } catch (e) {
+    print('Error during fetching user animals: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+```
+
+### 5. تعديل بيانات حيوان (Update Animal Data)
+
+تتيح هذه الوظيفة للمستخدم تعديل بيانات حيوان معين يمتلكه. يمكن تحديث حقل واحد أو أكثر، أو تحديث الصورة، أو كليهما.
+
+-   **المسار (Endpoint):** `PATCH /api/animals/:id`
+-   **الترويسات المطلوبة (Required Headers):**
+    *   `Authorization`: `Bearer <ACCESS_TOKEN>` (لمستخدمي الموبايل)
+    *   **الكوكيز (Cookies):** `accessToken=<ACCESS_TOKEN>` (لمستخدمي الويب)
+    *   `Content-Type`: `application/json` (إذا كنت ترسل بيانات نصية فقط) أو `multipart/form-data` (إذا كنت ترسل صورة و/أو بيانات نصية).
+-   **البيانات المطلوبة (Request Body):**
+    يمكنك إرسال أي من الحقول التالية (أو مزيج منها). الحقول غير المرسلة ستبقى كما هي.
+    ```json
+    {
+        "name": "اسم الحيوان الجديد",
+        "type": "نوع الحيوان الجديد",
+        "age": "العمر الجديد",
+        "photo": "ملف الصورة (عند استخدام multipart/form-data)",
+        "gender": "الجنس الجديد (male/female/unknown)",
+        // ... أي حقول أخرى من نموذج الحيوان
+    }
+    ```
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "message": "Animal updated successfully",
+        "data": {
+            "_id": "معرف الحيوان",
+            "user": "معرف المستخدم",
+            "photo": "رابط الصورة المحدثة",
+            "name": "اسم الحيوان المحدث",
+            // ... باقي بيانات الحيوان المحدثة
+        }
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Response - Status 400 Bad Request / 401 Unauthorized / 403 Forbidden / 404 Not Found / 500 Server Error):**
+    ```json
+    {
+        "message": "Animal not found" // أو "Unauthorized" أو "Forbidden" أو "Server error"
+    }
+    ```
+
+#### أمثلة الكود:
+
+**React/Next.js (Frontend - Fetch API - تحديث بيانات نصية فقط):**
+
+```javascript
+async function updateAnimalData(animalId, updatedFields) {
+  try {
+    const response = await fetch(`YOUR_API_BASE_URL/api/animals/${animalId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // مهم لإرسال الكوكيز تلقائيًا
+      body: JSON.stringify(updatedFields),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Animal updated successfully:', data);
+      return data;
+    } else {
+      console.error('Failed to update animal:', data.message);
+      throw new Error(data.message || 'Failed to update animal');
+    }
+  } catch (error) {
+    console.error('Error updating animal:', error);
+    throw error;
+  }
+}
+
+// مثال للاستخدام:
+// updateAnimalData('someAnimalId', { name: 'اسم جديد', age: 4 });
+```
+
+**React/Next.js (Frontend - Axios - تحديث بيانات نصية فقط):**
+
+```javascript
+import axios from 'axios';
+
+async function updateAnimalDataAxios(animalId, updatedFields) {
+  try {
+    const response = await axios.patch(`YOUR_API_BASE_URL/api/animals/${animalId}`, updatedFields, {
+      withCredentials: true, // مهم لإرسال الكوكيز تلقائيًا
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('Animal updated successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating animal:', error.response ? error.response.data.message : error.message);
+    throw error;
+  }
+}
+
+// مثال للاستخدام:
+// updateAnimalDataAxios('someAnimalId', { name: 'اسم جديد', age: 4 });
+```
+
+**React/Next.js (Frontend - Fetch API - تحديث صورة و/أو بيانات نصية):**
+
+```javascript
+async function updateAnimalWithPhoto(animalId, formData) {
+  // formData يجب أن يكون كائن FormData يحتوي على الصورة والحقول الأخرى
+  // مثال: 
+  // const formData = new FormData();
+  // formData.append('photo', fileInput.files[0]);
+  // formData.append('name', 'اسم جديد');
+
+  try {
+    const response = await fetch(`YOUR_API_BASE_URL/api/animals/${animalId}`, {
+      method: 'PATCH',
+      // لا تحدد Content-Type هنا، المتصفح سيقوم بتعيينها تلقائيًا لـ FormData
+      credentials: 'include', // مهم لإرسال الكوكيز تلقائيًا
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Animal updated successfully:', data);
+      return data;
+    } else {
+      console.error('Failed to update animal:', data.message);
+      throw new Error(data.message || 'Failed to update animal');
+    }
+  } catch (error) {
+    console.error('Error updating animal:', error);
+    throw error;
+  }
+}
+```
+
+**React/Next.js (Frontend - Axios - تحديث صورة و/أو بيانات نصية):**
+
+```javascript
+import axios from 'axios';
+
+async function updateAnimalWithPhotoAxios(animalId, formData) {
+  // formData يجب أن يكون كائن FormData يحتوي على الصورة والحقول الأخرى
+  // مثال: 
+  // const formData = new FormData();
+  // formData.append('photo', fileInput.files[0]);
+  // formData.append('name', 'اسم جديد');
+
+  try {
+    const response = await axios.patch(`YOUR_API_BASE_URL/api/animals/${animalId}`, formData, {
+      withCredentials: true, // مهم لإرسال الكوكيز تلقائيًا
+      headers: {
+        'Content-Type': 'multipart/form-data', // يمكن لـ Axios التعامل معها تلقائيًا، ولكن تحديدها يوضح الغرض
+      },
+    });
+
+    console.log('Animal updated successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating animal:', error.response ? error.response.data.message : error.message);
+    throw error;
+  }
+}
+```
+
+**Flutter (Mobile - تحديث بيانات نصية فقط):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, dynamic>> updateAnimalDataFlutter(String animalId, String accessToken, Map<String, dynamic> updatedFields) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/animals/$animalId');
+  try {
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken', // إرسال التوكن في رأس Authorization
+      },
+      body: json.encode(updatedFields),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Animal updated successfully: $data');
+      return data;
+    } else {
+      final errorData = json.decode(response.body);
+      print('Failed to update animal: ${response.statusCode} - ${errorData['message']}');
+      throw Exception('Failed to update animal');
+    }
+  } catch (e) {
+    print('Error during updating animal: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+
+// مثال للاستخدام:
+// updateAnimalDataFlutter('someAnimalId', 'yourAccessToken', { 'name': 'اسم جديد', 'age': 4 });
+```
+
+**Flutter (Mobile - تحديث صورة و/أو بيانات نصية):**
+
+```dart
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, dynamic>> updateAnimalWithPhotoFlutter(String animalId, String accessToken, {
+  File? photoFile,
+  Map<String, String>? textFields,
+}) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/animals/$animalId');
+  final request = http.MultipartRequest('PATCH', url);
+
+  request.headers['Authorization'] = 'Bearer $accessToken'; // إرسال التوكن في رأس Authorization
+
+  if (photoFile != null) {
+    request.files.add(await http.MultipartFile.fromPath(
+      'photo', // يجب أن يتطابق هذا مع اسم الحقل في الـ middleware (upload.single('photo'))
+      photoFile.path,
+      filename: 'animal_photo.jpg',
+    ));
+  }
+
+  if (textFields != null) {
+    request.fields.addAll(textFields);
+  }
+
+  try {
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Animal updated successfully: $data');
+      return data;
+    } else {
+      final errorData = json.decode(response.body);
+      print('Failed to update animal: ${response.statusCode} - ${errorData['message']}');
+      throw Exception('Failed to update animal');
+    }
+  } catch (e) {
+    print('Error during updating animal with photo: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+
+// مثال للاستخدام:
+// updateAnimalWithPhotoFlutter(
+//   'someAnimalId',
+//   'yourAccessToken',
+//   photoFile: File('path/to/your/image.jpg'),
+//   textFields: { 'name': 'اسم جديد', 'age': '4' },
+// );
+
+---
         

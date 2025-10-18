@@ -55,6 +55,17 @@ export const getProductById = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+export const getProductsByCategory = async (req, res) => {
+    try {
+        const { categoryId } = req.params;
+        const products = await Product.find({ category: categoryId }).populate("category");
+        res.status(200).json({ products });
+    }
+    catch (error) {
+        console.error("Error fetching products by category:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;

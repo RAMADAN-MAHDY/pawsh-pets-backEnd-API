@@ -10,6 +10,13 @@ import Animal from './Routers/animalRoutes.js';
 import categoryRoutes from './Routers/categoryRoutes.js';
 import productRoutes from './Routers/productRoutes.js';
 import favoriteRoutes from './Routers/favoriteRoutes.js';
+import { seedProducts  , deleteProducts } from './utils/seedData.js';
+import {seedCategories} from './utils/seedData.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // import { seedHotels } from './helper/addData.js';
 // import  Booking  from './routes/booking.routes.js';
 
@@ -40,6 +47,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static image files
+app.use('/images', express.static(path.join(__dirname, '..', 'iamges')));
+
 
 connectDb();
 // Routes
@@ -61,6 +71,11 @@ app.use('/api', favoriteRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     // seedHotels();   //  add this line to seed data hotels 
+    // seedProducts(); // Uncomment to seed products and categories
+    // seedCategories();
+    // seedProducts();
+    // deleteProducts(); // Uncomment to delete all products
+
     res.json({ message: 'API is running...' });
     // res.send('API is running...');
 });

@@ -1413,3 +1413,431 @@ Future<Map<String, dynamic>> updateAnimalWithPhotoFlutter(String animalId, Strin
 
 ---
         
+
+# واجهات برمجة التطبيقات للمنتجات والفئات (Product and Category APIs)
+
+توفر واجهات برمجة التطبيقات هذه طرقًا لجلب وإدارة المنتجات والفئات في النظام.
+
+### 1. جلب جميع الفئات (Get All Categories)
+
+تتيح هذه الوظيفة جلب قائمة بجميع الفئات المتاحة.
+
+-   **المسار (Endpoint):** `GET /api/categories`
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "categories": [
+            {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b4",
+                "name": "Dog Food",
+                "description": "High-quality food for dogs",
+                "createdAt": "2024-03-07T10:00:00.000Z",
+                "updatedAt": "2024-03-07T10:00:00.000Z"
+            },
+            {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b5",
+                "name": "Cat Toys",
+                "description": "Fun toys for cats",
+                "createdAt": "2024-03-07T10:05:00.000Z",
+                "updatedAt": "2024-03-07T10:05:00.000Z"
+            }
+        ]
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Response - Status 500 Server Error):**
+    ```json
+    {
+        "message": "Server error"
+    }
+    ```
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<List<dynamic>> getCategories() async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/categories');
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Categories fetched successfully: ${data['categories']}');
+      return data['categories'];
+    } else {
+      print('Failed to fetch categories: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to load categories');
+    }
+  } catch (e) {
+    print('Error fetching categories: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+```
+
+**React (Frontend - Fetch API):**
+
+```javascript
+async function getCategories() {
+  try {
+    const response = await fetch('YOUR_API_BASE_URL/api/categories');
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Categories fetched successfully:', data.categories);
+      return data.categories;
+    } else {
+      console.error('Failed to fetch categories:', data.message);
+      throw new Error(data.message || 'Failed to fetch categories');
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function getCategories() {
+  try {
+    const response = await axios.get('YOUR_API_BASE_URL/api/categories');
+    console.log('Categories fetched successfully:', response.data.categories);
+    return response.data.categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+
+### 2. جلب جميع المنتجات (Get All Products)
+
+تتيح هذه الوظيفة جلب قائمة بجميع المنتجات المتاحة.
+
+-   **المسار (Endpoint):** `GET /api/products`
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "products": [
+            {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b6",
+                "title": "Premium Dog Food",
+                "description": "Nutritious and delicious dog food",
+                "image": "/images/dog_food.png",
+                "weight": "10kg",
+                "price": 50.00,
+                "rating": 4.5,
+                "isFavorite": false,
+                "category": {
+                    "_id": "65e9d5a8a7b8c9d0e1f2a3b4",
+                    "name": "Dog Food"
+                },
+                "createdAt": "2024-03-07T10:10:00.000Z",
+                "updatedAt": "2024-03-07T10:10:00.000Z"
+            },
+            {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b7",
+                "title": "Interactive Cat Toy",
+                "description": "Keeps your cat entertained for hours",
+                "image": "https://pawsh-pets-back-end-api.vercel.app/images/cat_toy.png",
+                "weight": "0.2kg",
+                "price": 15.00,
+                "rating": 4.0,
+                "isFavorite": true,
+                "category": {
+                    "_id": "65e9d5a8a7b8c9d0e1f2a3b5",
+                    "name": "Cat Toys"
+                },
+                "createdAt": "2024-03-07T10:15:00.000Z",
+                "updatedAt": "2024-03-07T10:15:00.000Z"
+            }
+        ]
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Response - Status 500 Server Error):**
+    ```json
+    {
+        "message": "Server error"
+    }
+    ```
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<List<dynamic>> getProducts() async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/products');
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Products fetched successfully: ${data['products']}');
+      return data['products'];
+    } else {
+      print('Failed to fetch products: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to load products');
+    }
+  }
+  catch (e) {
+    print('Error fetching products: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+```
+
+**React (Frontend - Fetch API):**
+
+```javascript
+async function getProducts() {
+  try {
+    const response = await fetch('YOUR_API_BASE_URL/api/products');
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Products fetched successfully:', data.products);
+      return data.products;
+    } else {
+      console.error('Failed to fetch products:', data.message);
+      throw new Error(data.message || 'Failed to fetch products');
+    }
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function getProducts() {
+  try {
+    const response = await axios.get('YOUR_API_BASE_URL/api/products');
+    console.log('Products fetched successfully:', response.data.products);
+    return response.data.products;
+  } catch (error) {
+    console.error('Error fetching products:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+
+### 3. جلب منتج بواسطة المعرف (Get Product by ID)
+
+تتيح هذه الوظيفة جلب تفاصيل منتج معين باستخدام معرف المنتج الخاص به.
+
+-   **المسار (Endpoint):** `GET /api/products/:id`
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "product": {
+            "_id": "65e9d5a8a7b8c9d0e1f2a3b6",
+            "title": "Premium Dog Food",
+            "description": "Nutritious and delicious dog food",
+            "image": "https://pawsh-pets-back-end-api.vercel.app/images/dog_food.png",
+            "weight": "10kg",
+            "price": 50.00,
+            "rating": 4.5,
+            "isFavorite": false,
+            "category": {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b4",
+                "name": "Dog Food"
+            },
+            "createdAt": "2024-03-07T10:10:00.000Z",
+            "updatedAt": "2024-03-07T10:10:00.000Z"
+        }
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Response - Status 404 Not Found / 500 Server Error):**
+    ```json
+    {
+        "message": "Product not found" // أو "Server error"
+    }
+    ```
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, dynamic>> getProductById(String productId) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/products/$productId');
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Product fetched successfully: ${data['product']}');
+      return data['product'];
+    } else {
+      print('Failed to fetch product: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to load product');
+    }
+  } catch (e) {
+    print('Error fetching product: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+```
+
+**React (Frontend - Fetch API):**
+
+```javascript
+async function getProductById(productId) {
+  try {
+    const response = await fetch(`YOUR_API_BASE_URL/api/products/${productId}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Product fetched successfully:', data.product);
+      return data.product;
+    } else {
+      console.error('Failed to fetch product:', data.message);
+      throw new Error(data.message || 'Failed to fetch product');
+    }
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function getProductById(productId) {
+  try {
+    const response = await axios.get(`YOUR_API_BASE_URL/api/products/${productId}`);
+    console.log('Product fetched successfully:', response.data.product);
+    return response.data.product;
+  } catch (error) {
+    console.error('Error fetching product:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+
+### 4. جلب المنتجات بواسطة معرف الفئة (Get Products by Category ID)
+
+تتيح هذه الوظيفة جلب قائمة بالمنتجات التي تنتمي إلى فئة معينة باستخدام معرف الفئة.
+
+-   **المسار (Endpoint):** `GET /api/products/category/:categoryId`
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "products": [
+            {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b6",
+                "title": "Premium Dog Food",
+                "description": "Nutritious and delicious dog food",
+                "image": "https://pawsh-pets-back-end-api.vercel.app/images/dog_food.png",
+                "weight": "10kg",
+                "price": 50.00,
+                "rating": 4.5,
+                "isFavorite": false,
+                "category": {
+                    "_id": "65e9d5a8a7b8c9d0e1f2a3b4",
+                    "name": "Dog Food"
+                },
+                "createdAt": "2024-03-07T10:10:00.000Z",
+                "updatedAt": "2024-03-07T10:10:00.000Z"
+            }
+        ]
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Response - Status 500 Server Error):**
+    ```json
+    {
+        "message": "Server error"
+    }
+    ```
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<List<dynamic>> getProductsByCategory(String categoryId) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/products/category/$categoryId');
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print('Products by category fetched successfully: ${data['products']}');
+      return data['products'];
+    } else {
+      print('Failed to fetch products by category: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to load products by category');
+    }
+  } catch (e) {
+    print('Error fetching products by category: $e');
+    throw Exception('Failed to connect to the server');
+  }
+}
+```
+
+**React (Frontend - Fetch API):**
+
+```javascript
+async function getProductsByCategory(categoryId) {
+  try {
+    const response = await fetch(`YOUR_API_BASE_URL/api/products/category/${categoryId}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Products by category fetched successfully:', data.products);
+      return data.products;
+    } else {
+      console.error('Failed to fetch products by category:', data.message);
+      throw new Error(data.message || 'Failed to fetch products by category');
+    }
+  } catch (error) {
+    console.error('Error fetching products by category:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function getProductsByCategory(categoryId) {
+  try {
+    const response = await axios.get(`YOUR_API_BASE_URL/api/products/category/${categoryId}`);
+    console.log('Products by category fetched successfully:', response.data.products);
+    return response.data.products;
+  } catch (error) {
+    console.error('Error fetching products by category:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+
+---
+

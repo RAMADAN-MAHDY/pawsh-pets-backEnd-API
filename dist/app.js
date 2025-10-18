@@ -14,8 +14,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// import { seedHotels } from './helper/addData.js';
-// import  Booking  from './routes/booking.routes.js';
 dotenv.config();
 const app = express();
 // webhook route should be before bodyParser middleware

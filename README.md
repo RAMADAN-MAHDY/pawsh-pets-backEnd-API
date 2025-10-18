@@ -1410,7 +1410,7 @@ Future<Map<String, dynamic>> updateAnimalWithPhotoFlutter(String animalId, Strin
 //   photoFile: File('path/to/your/image.jpg'),
 //   textFields: { 'name': 'اسم جديد', 'age': '4' },
 // );
-
+```
 ---
         
 

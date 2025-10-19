@@ -1925,8 +1925,8 @@ async function addFavorite(productId, token) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include', // Include cookies in the request
       body: JSON.stringify({ productId }),
     });
     const data = await response.json();
@@ -1957,8 +1957,8 @@ async function addFavorite(productId, token) {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
+      withCredentials: true, // Include cookies in the request
     });
     console.log('Product added to favorites:', response.data);
     return response.data;
@@ -2035,6 +2035,7 @@ async function getFavorites(token) {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include', // Include cookies in the request
     });
     const data = await response.json();
 
@@ -2061,8 +2062,9 @@ async function getFavorites(token) {
   try {
     const response = await axios.get('YOUR_API_BASE_URL/api/favorites', {
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        'content-type': 'application/json',
+       },
+      withCredentials: true, // Include cookies in the request
     });
     console.log('Favorites fetched successfully:', response.data.favorites);
     return response.data.favorites;
@@ -2126,9 +2128,10 @@ async function removeFavorite(productId, token) {
   try {
     const response = await fetch(`YOUR_API_BASE_URL/api/favorites/${productId}`, {
       method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
+     headers: {
+        'Content-Type': 'application/json',
       },
+      credentials: 'include', // Include cookies in the request
     });
     const data = await response.json();
 
@@ -2155,8 +2158,9 @@ async function removeFavorite(productId, token) {
   try {
     const response = await axios.delete(`YOUR_API_BASE_URL/api/favorites/${productId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
+      withCredentials: true, // Include cookies in the request
     });
     console.log('Product removed from favorites:', response.data.message);
     return response.data;

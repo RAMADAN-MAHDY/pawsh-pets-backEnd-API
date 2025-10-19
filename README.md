@@ -1410,7 +1410,7 @@ Future<Map<String, dynamic>> updateAnimalWithPhotoFlutter(String animalId, Strin
 //   photoFile: File('path/to/your/image.jpg'),
 //   textFields: { 'name': 'اسم جديد', 'age': '4' },
 // );
-
+```
 ---
         
 
@@ -1524,7 +1524,16 @@ async function getCategories() {
 
 -   **المسار (Endpoint):** `GET /api/products`
 -   **الاستجابة الناجحة (Success Response - Status 200 OK):**
-    ```json
+-    ** ملحوظه مهمه / لازم تضيف رابط ده  https://pawsh-pets-back-end-api.vercel.app   قبل مسار الصور لعرضها    مثال
+
+
+```javascript
+const img = `https://pawsh-pets-back-end-api.vercel.app${products.image}`
+
+```
+
+
+```json
     {
         "products": [
             {
@@ -1547,7 +1556,7 @@ async function getCategories() {
                 "_id": "65e9d5a8a7b8c9d0e1f2a3b7",
                 "title": "Interactive Cat Toy",
                 "description": "Keeps your cat entertained for hours",
-                "image": "https://pawsh-pets-back-end-api.vercel.app/images/cat_toy.png",
+                "image": "/images/cat_toy.png",
                 "weight": "0.2kg",
                 "price": 15.00,
                 "rating": 4.0,
@@ -1567,7 +1576,7 @@ async function getCategories() {
     {
         "message": "Server error"
     }
-    ```
+ ```
 
 #### أمثلة الكود:
 
@@ -1649,7 +1658,7 @@ async function getProducts() {
             "_id": "65e9d5a8a7b8c9d0e1f2a3b6",
             "title": "Premium Dog Food",
             "description": "Nutritious and delicious dog food",
-            "image": "https://pawsh-pets-back-end-api.vercel.app/images/dog_food.png",
+            "image": "/images/dog_food.png",
             "weight": "10kg",
             "price": 50.00,
             "rating": 4.5,
@@ -1750,7 +1759,7 @@ async function getProductById(productId) {
                 "_id": "65e9d5a8a7b8c9d0e1f2a3b6",
                 "title": "Premium Dog Food",
                 "description": "Nutritious and delicious dog food",
-                "image": "https://pawsh-pets-back-end-api.vercel.app/images/dog_food.png",
+                "image": "/images/dog_food.png",
                 "weight": "10kg",
                 "price": 50.00,
                 "rating": 4.5,

@@ -1849,4 +1849,321 @@ async function getProductsByCategory(categoryId) {
 ```
 
 ---
+# واجهات برمجة التطبيقات للمفضلة (Favorites API)
 
+تتيح واجهات برمجة التطبيقات هذه للمستخدمين إدارة قائمة المنتجات المفضلة لديهم.
+
+### 1. إضافة منتج إلى المفضلة (Add Product to Favorites)
+
+تتيح هذه الوظيفة للمستخدم المصادق عليه إضافة منتج إلى قائمة مفضلاته.
+
+-   **المسار (Endpoint):** `POST /api/ADD_favorites`
+-   **يتطلب المصادقة:** نعم (Auth Token في Header)
+-   **نوع المحتوى (Content-Type):** `application/json`
+-   **الجسم (Request Body):**
+    ```json
+    {
+        "productId": "<معرف_المنتج>"
+    }
+    ```
+-   **الاستجابة الناجحة (Success Response - Status 201 Created):**
+    ```json
+    {
+        "message": "Product added to favorites",
+        "favorite": {
+            "_id": "65e9d5a8a7b8c9d0e1f2a3b8",
+            "user": "65e9d5a8a7b8c9d0e1f2a3b9",
+            "product": "65e9d5a8a7b8c9d0e1f2a3b6",
+            "createdAt": "2024-03-07T10:20:00.000Z",
+            "__v": 0
+        }
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Responses):**
+    -   `400 Bad Request`: `{"message": "Product ID is required"}`
+    -   `401 Unauthorized`: `{"message": "Unauthorized"}`
+    -   `409 Conflict`: `{"message": "Product already in favorites"}`
+    -   `500 Server Error`: `{"message": "Server error"}`
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, dynamic>> addFavorite(String productId, String token) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/ADD_favorites');
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'productId': productId}),
+    );
+
+    if (response.statusCode == 201) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to add favorite: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error adding favorite: $e');
+  }
+}
+```
+
+**React (Frontend - Fetch API):**
+
+```javascript
+async function addFavorite(productId, token) {
+  try {
+    const response = await fetch('YOUR_API_BASE_URL/api/ADD_favorites', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ productId }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Product added to favorites:', data);
+      return data;
+    } else {
+      console.error('Failed to add favorite:', data.message);
+      throw new Error(data.message || 'Failed to add favorite');
+    }
+  } catch (error) {
+    console.error('Error adding favorite:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function addFavorite(productId, token) {
+  try {
+    const response = await axios.post('YOUR_API_BASE_URL/api/ADD_favorites', {
+      productId
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    console.log('Product added to favorites:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding favorite:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+
+### 2. جلب جميع المنتجات المفضلة (Get All Favorites)
+
+تتيح هذه الوظيفة للمستخدم المصادق عليه جلب قائمة بجميع المنتجات التي أضافها إلى مفضلاته.
+
+-   **المسار (Endpoint):** `GET /api/favorites`
+-   **يتطلب المصادقة:** نعم (Auth Token في Header)
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "favorites": [
+            {
+                "_id": "65e9d5a8a7b8c9d0e1f2a3b8",
+                "user": "65e9d5a8a7b8c9d0e1f2a3b9",
+                "product": {
+                    "_id": "65e9d5a8a7b8c9d0e1f2a3b6",
+                    "title": "Premium Dog Food",
+                    "image": "/images/dog_food.png",
+                    "price": 50.00
+                },
+                "createdAt": "2024-03-07T10:20:00.000Z"
+            }
+        ]
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Responses):**
+    -   `401 Unauthorized`: `{"message": "Unauthorized"}`
+    -   `500 Server Error`: `{"message": "Server error"}`
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<List<dynamic>> getFavorites(String token) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/favorites');
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['favorites'];
+    } else {
+      throw Exception('Failed to fetch favorites: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error fetching favorites: $e');
+  }
+}
+```
+
+**React (Frontend - Fetch API):**
+
+```javascript
+async function getFavorites(token) {
+  try {
+    const response = await fetch('YOUR_API_BASE_URL/api/favorites', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Favorites fetched successfully:', data.favorites);
+      return data.favorites;
+    } else {
+      console.error('Failed to fetch favorites:', data.message);
+      throw new Error(data.message || 'Failed to fetch favorites');
+    }
+  } catch (error) {
+    console.error('Error fetching favorites:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function getFavorites(token) {
+  try {
+    const response = await axios.get('YOUR_API_BASE_URL/api/favorites', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    console.log('Favorites fetched successfully:', response.data.favorites);
+    return response.data.favorites;
+  } catch (error) {
+    console.error('Error fetching favorites:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+
+### 3. إزالة منتج من المفضلة (Remove Product from Favorites)
+
+تتيح هذه الوظيفة للمستخدم المصادق عليه إزالة منتج معين من قائمة مفضلاته.
+
+-   **المسار (Endpoint):** `DELETE /api/favorites/:productId`
+-   **يتطلب المصادقة:** نعم (Auth Token في Header)
+-   **الاستجابة الناجحة (Success Response - Status 200 OK):**
+    ```json
+    {
+        "message": "Product removed from favorites"
+    }
+    ```
+-   **الاستجابة عند وجود خطأ (Error Responses):**
+    -   `401 Unauthorized`: `{"message": "Unauthorized"}`
+    -   `404 Not Found`: `{"message": "Product not found in favorites"}`
+    -   `500 Server Error`: `{"message": "Server error"}`
+
+#### أمثلة الكود:
+
+**Flutter (Mobile):**
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, dynamic>> removeFavorite(String productId, String token) async {
+  final url = Uri.parse('YOUR_API_BASE_URL/api/favorites/$productId');
+  try {
+    final response = await http.delete(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to remove favorite: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error removing favorite: $e');
+  }
+}
+```
+
+**React (Frontend - Fetch API):n**
+
+```javascript
+async function removeFavorite(productId, token) {
+  try {
+    const response = await fetch(`YOUR_API_BASE_URL/api/favorites/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Product removed from favorites:', data.message);
+      return data;
+    } else {
+      console.error('Failed to remove favorite:', data.message);
+      throw new Error(data.message || 'Failed to remove favorite');
+    }
+  } catch (error) {
+    console.error('Error removing favorite:', error);
+    throw error;
+  }
+}
+```
+
+**React (Frontend - Axios):**
+
+```javascript
+import axios from 'axios';
+
+async function removeFavorite(productId, token) {
+  try {
+    const response = await axios.delete(`YOUR_API_BASE_URL/api/favorites/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    console.log('Product removed from favorites:', response.data.message);
+    return response.data;
+  } catch (error) {
+    console.error('Error removing favorite:', error.response ? error.response.data.message : error.message);
+    throw error.response ? error.response.data.message : error.message;
+  }
+}
+```
+        

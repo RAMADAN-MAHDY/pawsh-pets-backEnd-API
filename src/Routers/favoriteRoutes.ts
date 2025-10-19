@@ -4,7 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-router.post("/favorites", authMiddleware, addFavorite);
+router.post("/ADD_favorites", authMiddleware, addFavorite);
 router.get("/favorites", authMiddleware, getFavorites);
 router.delete("/favorites/:productId", authMiddleware, removeFavorite);
 
